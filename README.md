@@ -1,4 +1,4 @@
-## Project installation
+## Project Installation
 
 - Clone the **_GIT_** repository.
 - Move to the project directory.
