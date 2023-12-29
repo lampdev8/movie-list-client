@@ -1,0 +1,11 @@
+.loginContainer {
+    width: 18rem;
+    margin: auto;
+    margin-top: 7rem;
+}
+
+.loginTitle {
+    margin: 1em;
+    color: white;
+    text-align: center;
+}
