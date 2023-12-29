@@ -7,29 +7,25 @@ import SuccessButton from '../components/UI/button/SuccessButton';
 import IconButton from '../components/UI/button/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import MovieCard from '../components/MovieCard';
+import Pagination from '../components/UI/pagination/Pagination';
 
 const Movies = () => {
     const {store} = useContext(Context);
     const navigate = useNavigate();
     const [movies, setMovies] = useState([]);
-    const moviesLimit = 10;
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalMovieCount, setTotalMovieCount] = useState(0);
-    const [startMovieIndex, setStartMovieIndex] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
 
-    async function fetchMovies(limit, page) {
+    async function fetchMovies(page) {
       try {
           const response = await MovieService.fetchMovies({
-              limit: limit,
-              page: page
+              page: page,
           });
 
-          console.log('response:',response);
-
           setMovies(response.data.data.data);
-          setTotalMovieCount(response.data.data.total);
           setCurrentPage(response.data.data.current_page);
-          setStartMovieIndex(limit * (page - 1));
+          setLastPage(response.data.data.last_page);
       } catch (e) {
           console.error(e.message);
       }
@@ -46,10 +42,15 @@ const Movies = () => {
       navigate('/movies/new');
     }
 
+    const selectPage = async (page) => {
+      setCurrentPage(page);
+      await fetchMovies(page);
+    }
+
     useEffect(() => {
         if (localStorage.getItem('access_token')) {
           store.fetchUser();
-          fetchMovies(moviesLimit, currentPage);
+          fetchMovies(currentPage);
         }
       }, []);
 
@@ -88,6 +89,20 @@ const Movies = () => {
                 Add Movie
               </SuccessButton>
 
+              <div className="d-flex flex-wrap">
+                {movies.map((movie) => (
+                  <MovieCard
+                    key={movie.id}
+                    movie={movie}
+                  />
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={currentPage}
+                lastPage={lastPage}
+                selectPage={selectPage}
+              />
             </div>
           }
         </div>
