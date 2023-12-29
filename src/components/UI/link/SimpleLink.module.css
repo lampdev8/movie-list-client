@@ -1,0 +1,13 @@
+.simpleLink {
+    cursor: pointer;
+    color: blue;
+}
+
+.simpleLink:hover {
+    text-decoration: underline;
+}
+
+.simpleLink.active {
+    font-weight: bold;
+    text-decoration: underline;
+}

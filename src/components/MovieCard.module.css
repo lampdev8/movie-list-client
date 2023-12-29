@@ -1,0 +1,26 @@
+.container {
+    margin: 1rem;
+    width: 200px;
+    height: 300px;
+    border-radius: 20px;
+    background-color:darkslategray;
+    padding: 0.7rem;
+}
+
+.imageContainer {
+    height: 185px;
+    position: relative;
+    margin-top: auto;
+    text-align: center;
+}
+
+.image {
+    max-width: 100%;
+    max-height: 180px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.text {
+    color: white;
+}

@@ -4,7 +4,6 @@ export default class MovieService {
     static async fetchMovies(dataToFetchMovies) {
         return $api.get('/movies', {
             params: {
-                limit: dataToFetchMovies.limit,
                 page: dataToFetchMovies.page,
             }
         });

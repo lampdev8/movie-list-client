@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {observer} from "mobx-react-lite";
 import {Context} from '../index';
 import {Routes, Route, Navigate} from 'react-router-dom';
@@ -10,6 +10,12 @@ import Error404 from '../pages/error/404';
 
 const AppRouter = () => {
     const {store} = useContext(Context);
+
+    useEffect(() => {
+      if (localStorage.getItem('access_token')) {
+        store.fetchUser();
+      }
+    }, []);
 
     return (
         <Routes>
