@@ -4,10 +4,12 @@ import IconButton from './UI/button/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {useNavigate} from 'react-router-dom';
 
 const MovieCard = (props) => {
+    const navigate = useNavigate();
     const edit = () => {
-        console.log('edit movie');
+        navigate('/movies/edit/' + props.movie.id);
     }
 
     const remove = () => {
