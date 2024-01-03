@@ -1,0 +1,9 @@
+.navbarPanel {
+    display: flex;
+    margin: 1rem 0;
+}
+
+.navbarLabel {
+    color: white;
+    margin: unset;
+}

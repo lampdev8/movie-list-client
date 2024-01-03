@@ -2,13 +2,12 @@ import React, {useContext, useEffect, useState} from 'react';
 import { Context } from '../index';
 import {observer} from "mobx-react-lite";
 import {useNavigate} from 'react-router-dom';
+import TopNavbar from '../components/UI/navbar/TopNavbar';
 import MovieService from '../services/MovieService';
 import SuccessButton from '../components/UI/button/SuccessButton';
-import IconButton from '../components/UI/button/IconButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import MovieCard from '../components/MovieCard';
 import Pagination from '../components/UI/pagination/Pagination';
+import ConfirmationModal from '../components/UI/modal/ConfirmationModal';
+import MovieList from '../components/MovieList';
 
 const Movies = () => {
     const {store} = useContext(Context);
@@ -16,6 +15,8 @@ const Movies = () => {
     const [movies, setMovies] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    const [visibleConfirmationModal, setVisibleConfirmationModal] = useState(false);
 
     async function fetchMovies(page) {
       try {
@@ -31,13 +32,6 @@ const Movies = () => {
       }
     }
 
-    const logout = (e) => {
-      e.preventDefault();
-      store.setAuth(false);
-      store.logout();
-      navigate('/');
-    }
-
     const addMovie = () => {
       navigate('/movies/new');
     }
@@ -45,6 +39,19 @@ const Movies = () => {
     const selectPage = async (page) => {
       setCurrentPage(page);
       await fetchMovies(page);
+    }
+
+    const removeConfirmation = (movie) => {
+      setSelectedMovie(movie);
+      setVisibleConfirmationModal(true);
+    }
+
+    const deleteMovie = async () => {
+      await MovieService.remove(selectedMovie.id)
+      setVisibleConfirmationModal(false);
+      fetchMovies(1);
+      setCurrentPage(1);
+      setSelectedMovie(null);
     }
 
     useEffect(() => {
@@ -56,21 +63,10 @@ const Movies = () => {
 
     return (
         <div>
-          <div className="d-flex separate_element right-align" >
-              <div>&nbsp;</div>
-              <IconButton style={{marginLeft: 'auto'}}>
-                  <div className="d-flex" onClick={logout}>
-                    <h6 style={{color: 'white', margin: 'unset', }}>
-                      Log Out &nbsp;
-                    </h6>
-                    <FontAwesomeIcon
-                      icon={faArrowRightFromBracket}
-                    />
-                  </div>
-              </IconButton>
-          </div>
+          <TopNavbar showGoBack={false} />
 
-          {movies !== undefined && movies.length === 0 ? <div style={{margin: 'auto', marginTop: '7rem', textAlign: 'center',}}>
+          {movies !== undefined && movies.length === 0 ?
+            <div style={{margin: 'auto', marginTop: '7rem', textAlign: 'center',}}>
               <h2 style={{color: 'white',}}>
                 Your movie list is empty
               </h2>
@@ -89,14 +85,10 @@ const Movies = () => {
                 Add Movie
               </SuccessButton>
 
-              <div className="d-flex flex-wrap">
-                {movies.map((movie) => (
-                  <MovieCard
-                    key={movie.id}
-                    movie={movie}
-                  />
-                ))}
-              </div>
+              <MovieList
+                movies={movies}
+                remove={removeConfirmation}
+              />
 
               <Pagination
                 currentPage={currentPage}
@@ -105,6 +97,18 @@ const Movies = () => {
               />
             </div>
           }
+
+          <ConfirmationModal
+            visible={visibleConfirmationModal}
+            setVisible={setVisibleConfirmationModal}
+            title='Delete movie'
+            content={`
+              Are you sure you want to delete ${
+                selectedMovie !== null ? selectedMovie.title : ''
+              } movie?
+            `}
+            confirmAction={deleteMovie}
+          />
         </div>
     );
 }

@@ -33,7 +33,7 @@ const EditMovie = () => {
 
     return (
         <div>
-            <TopNavbar />
+            <TopNavbar showGoBack={true}/>
             <h2 style={{color: 'white', margin: '2rem',}}>Edit movie</h2>
             <MovieForm
                 movie={movie}

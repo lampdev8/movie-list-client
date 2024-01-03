@@ -13,13 +13,19 @@ const MovieCard = (props) => {
     }
 
     const remove = () => {
-        console.log('remove movie');
+        if (props.remove !== undefined) {
+            props.remove(props.movie);
+        }
     }
 
     return (
         <div className={cl.container}>
-            <div className={cl.imageContainer}>
-                <img className={cl.image} src={props.movie.poster} alt="poster" />
+            <div className={cl.posterContainer}>
+                <img
+                    className={cl.poster}
+                    src={props.movie.poster}
+                    alt="poster"
+                />
             </div>
             <h5 className={cl.text}>{props.movie.title}</h5>
             <div className="d-flex">

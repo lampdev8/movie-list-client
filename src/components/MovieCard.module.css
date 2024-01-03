@@ -7,14 +7,14 @@
     padding: 0.7rem;
 }
 
-.imageContainer {
+.posterContainer {
     height: 185px;
     position: relative;
     margin-top: auto;
     text-align: center;
 }
 
-.image {
+.poster {
     max-width: 100%;
     max-height: 180px;
     margin-left: auto;
