@@ -4,20 +4,28 @@ import IconButton from './UI/button/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {useNavigate} from 'react-router-dom';
 
 const MovieCard = (props) => {
+    const navigate = useNavigate();
     const edit = () => {
-        console.log('edit movie');
+        navigate('/movies/edit/' + props.movie.id);
     }
 
     const remove = () => {
-        console.log('remove movie');
+        if (props.remove !== undefined) {
+            props.remove(props.movie);
+        }
     }
 
     return (
         <div className={cl.container}>
-            <div className={cl.imageContainer}>
-                <img className={cl.image} src={props.movie.poster} alt="poster" />
+            <div className={cl.posterContainer}>
+                <img
+                    className={cl.poster}
+                    src={props.movie.poster}
+                    alt="poster"
+                />
             </div>
             <h5 className={cl.text}>{props.movie.title}</h5>
             <div className="d-flex">

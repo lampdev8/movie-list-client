@@ -10,7 +10,7 @@ export default class MovieService {
     }
 
     static async fetchMovie(movieId) {
-        return $api.get('/movie/' + movieId);
+        return $api.get('/movies/' + movieId);
     }
 
     static async create(newMovie) {
@@ -22,7 +22,7 @@ export default class MovieService {
     }
 
     static async update(dataToUpdateMovie) {
-        return $api.put(`/movies/${dataToUpdateMovie.movieId}`, {
+        return $api.put(`/movies/${dataToUpdateMovie.id}`, {
             title: dataToUpdateMovie.title,
             year: dataToUpdateMovie.year,
             poster: dataToUpdateMovie.poster,

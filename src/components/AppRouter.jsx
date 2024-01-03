@@ -3,9 +3,9 @@ import {observer} from "mobx-react-lite";
 import {Context} from '../index';
 import {Routes, Route, Navigate} from 'react-router-dom';
 import Movies from '../pages/Movies';
-import Movie from '../pages/Movie';
 import Login from '../pages/auth/Login';
 import NewMovie from '../pages/NewMovie';
+import EditMovie from '../pages/EditMovie';
 import Error404 from '../pages/error/404';
 
 const AppRouter = () => {
@@ -35,8 +35,8 @@ const AppRouter = () => {
             element={store.isAuth ? <NewMovie /> : <Navigate to="/login" />}
           />
           <Route
-            path="/movie/:movieId"
-            element={store.isAuth ? <Movie /> : <Navigate to="/login" />}
+            path="/movies/edit/:movieId"
+            element={store.isAuth ? <EditMovie /> : <Navigate to="/login" />}
           />
           <Route
             path="/login"

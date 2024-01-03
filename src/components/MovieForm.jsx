@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../index';
 import {observer} from "mobx-react-lite";
 import cl from './MovieForm.module.css';
@@ -8,9 +8,10 @@ import SuccessButton from './UI/button/SuccessButton';
 const MovieForm = (props) => {
     const {store} = useContext(Context);
     const [movie, setMovie] = useState({
-        poster: props.poster !== undefined ? props.poster : null,
-        title: props.title !== undefined ? props.title : '',
-        year: props.year !== undefined ? props.year : '',
+        id: null,
+        poster: null,
+        title: null,
+        year: null,
     });
 
     const addNewMovie = (e) => {
@@ -19,6 +20,7 @@ const MovieForm = (props) => {
         props.create(movie);
 
         setMovie({
+            id: null,
             poster: null,
             title: null,
             year: null,
@@ -52,10 +54,20 @@ const MovieForm = (props) => {
         setMovie({...movie, poster: poster});
     }
 
+    useEffect(() => {
+        if (props.movie !== undefined) {
+            setMovie(props.movie);
+        }
+    }, [props.movie])
+
     return (
         <div className={cl.formContainer + " d-flex"}>
             <div className={cl.square}>
-                {movie.poster !== null && movie.poster.url !== undefined ? <img src={movie.poster.url} alt='poster' className={cl.poster} /> : ''}
+                {Object.keys(movie).length !== 0 && movie.poster !== null ?
+                    typeof movie.poster === "object" && movie.poster.url !== undefined ? <img src={movie.poster.url} alt='poster' className={cl.poster} /> :
+                    typeof movie.poster === "string" ? <img src={movie.poster} alt='poster' className={cl.poster} /> :
+                    '' :
+                ''}
             </div>
             <form className={cl.form}>
                 <FormInput
@@ -63,7 +75,6 @@ const MovieForm = (props) => {
                     onChange={changePosterFile}
                     style={{marginBottom: '1.5rem',}}
                 />
-                {/* onChange={e => setMovie({...movie, poster: URL.createObjectURL(e.target.files[0])})} */}
                 <FormInput
                     onChange={(e) => setMovie({...movie, title: e.target.value})}
                     value={movie.title}
