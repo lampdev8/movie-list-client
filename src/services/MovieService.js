@@ -2,19 +2,22 @@ import $api from "../http";
 
 export default class MovieService {
     static async fetchMovies(dataToFetchMovies) {
-        return $api.get('/movies', {
+        return $api.get('/movies/', {
             params: {
+                search: dataToFetchMovies.search,
+                genre: dataToFetchMovies.genre,
+                year: dataToFetchMovies.year,
                 page: dataToFetchMovies.page,
             }
         });
     }
 
     static async fetchMovie(movieId) {
-        return $api.get('/movies/' + movieId);
+        return $api.get('/movie/' + movieId);
     }
 
     static async create(newMovie) {
-        return $api.post('/movies', {
+        return $api.post('/movie/store', {
             title: newMovie.title,
             year: newMovie.year,
             poster: newMovie.poster,
@@ -22,7 +25,7 @@ export default class MovieService {
     }
 
     static async update(dataToUpdateMovie) {
-        return $api.put(`/movies/${dataToUpdateMovie.id}`, {
+        return $api.put(`/movie/${dataToUpdateMovie.id}`, {
             title: dataToUpdateMovie.title,
             year: dataToUpdateMovie.year,
             poster: dataToUpdateMovie.poster,
@@ -30,6 +33,6 @@ export default class MovieService {
     }
 
     static async remove(movieId) {
-        return $api.delete(`/movies/${movieId}`);
+        return $api.delete(`/movie/${movieId}`);
     }
 }

@@ -7,26 +7,33 @@ import MovieService from '../services/MovieService';
 import SuccessButton from '../components/UI/button/SuccessButton';
 import Pagination from '../components/UI/pagination/Pagination';
 import ConfirmationModal from '../components/UI/modal/ConfirmationModal';
+import MovieFilters from '../components/MovieFilters';
 import MovieList from '../components/MovieList';
 
 const Movies = () => {
     const {store} = useContext(Context);
     const navigate = useNavigate();
+    const [filters, setFilters] = useState({
+      search: '',
+      genre: '',
+      year: '',
+    });
     const [movies, setMovies] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [visibleConfirmationModal, setVisibleConfirmationModal] = useState(false);
 
-    async function fetchMovies(page) {
+    async function fetchMovies(filters, page) {
       try {
-          const response = await MovieService.fetchMovies({
-              page: page,
-          });
+        let requestParams = filters;
+        requestParams.page = page;
 
-          setMovies(response.data.data.data);
-          setCurrentPage(response.data.data.current_page);
-          setLastPage(response.data.data.last_page);
+        const response = await MovieService.fetchMovies(requestParams);
+
+        setMovies(response.data.data.data);
+        setCurrentPage(response.data.data.current_page);
+        setLastPage(response.data.data.last_page);
       } catch (e) {
           console.error(e.message);
       }
@@ -38,7 +45,7 @@ const Movies = () => {
 
     const selectPage = async (page) => {
       setCurrentPage(page);
-      await fetchMovies(page);
+      await fetchMovies(filters, page);
     }
 
     const removeConfirmation = (movie) => {
@@ -49,7 +56,7 @@ const Movies = () => {
     const deleteMovie = async () => {
       await MovieService.remove(selectedMovie.id)
       setVisibleConfirmationModal(false);
-      fetchMovies(1);
+      fetchMovies(filters, 1);
       setCurrentPage(1);
       setSelectedMovie(null);
     }
@@ -57,7 +64,7 @@ const Movies = () => {
     useEffect(() => {
         if (localStorage.getItem('access_token')) {
           store.fetchUser();
-          fetchMovies(currentPage);
+          fetchMovies(filters, currentPage);
         }
       }, []);
 
@@ -84,6 +91,15 @@ const Movies = () => {
               >
                 Add Movie
               </SuccessButton>
+
+              <div className='separate_element'>
+                <MovieFilters
+                  filters={filters}
+                  setFilters={setFilters}
+                  setCurrentPage={setCurrentPage}
+                  fetchMovies={fetchMovies}
+                />
+              </div>
 
               <MovieList
                 movies={movies}
