@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 import { Context } from '../index';
 import {observer} from "mobx-react-lite";
 import {useNavigate} from 'react-router-dom';
@@ -23,6 +23,7 @@ const Movies = () => {
     const [lastPage, setLastPage] = useState(1);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [visibleConfirmationModal, setVisibleConfirmationModal] = useState(false);
+    const timestamp = useRef(0);
 
     async function fetchMovies(filters, page) {
       try {
@@ -34,6 +35,7 @@ const Movies = () => {
         setMovies(response.data.data.data);
         setCurrentPage(response.data.data.current_page);
         setLastPage(response.data.data.last_page);
+        timestamp.current = new Date().getTime();
       } catch (e) {
           console.error(e.message);
       }
@@ -72,35 +74,28 @@ const Movies = () => {
         <div>
           <TopNavbar showGoBack={false} />
 
+          <h2 style={{color: 'white',}}>Movies</h2>
+          <SuccessButton
+            onClick={addMovie}
+          >
+            Add Movie
+          </SuccessButton>
+
+          <div className='separate_element'>
+            <MovieFilters
+              filters={filters}
+              setFilters={setFilters}
+              setCurrentPage={setCurrentPage}
+              fetchMovies={fetchMovies}
+            />
+          </div>
+
           {movies !== undefined && movies.length === 0 ?
             <div style={{margin: 'auto', marginTop: '7rem', textAlign: 'center',}}>
               <h2 style={{color: 'white',}}>
-                Your movie list is empty
+                There are no movies available
               </h2>
-              <div>
-                <SuccessButton
-                  onClick={addMovie}
-                >
-                  Add a new Movie
-                </SuccessButton>
-              </div>
             </div> : <div>
-              <h2 style={{color: 'white',}}>My Movies</h2>
-              <SuccessButton
-                onClick={addMovie}
-              >
-                Add Movie
-              </SuccessButton>
-
-              <div className='separate_element'>
-                <MovieFilters
-                  filters={filters}
-                  setFilters={setFilters}
-                  setCurrentPage={setCurrentPage}
-                  fetchMovies={fetchMovies}
-                />
-              </div>
-
               <MovieList
                 movies={movies}
                 remove={removeConfirmation}
@@ -110,6 +105,7 @@ const Movies = () => {
                 currentPage={currentPage}
                 lastPage={lastPage}
                 selectPage={selectPage}
+                key={`pagination_${timestamp.current}`}
               />
             </div>
           }

@@ -19,6 +19,7 @@ export default class MovieService {
     static async create(newMovie) {
         return $api.post('/movie/store', {
             title: newMovie.title,
+            genre: newMovie.genre,
             year: newMovie.year,
             poster: newMovie.poster,
         });
@@ -27,6 +28,7 @@ export default class MovieService {
     static async update(dataToUpdateMovie) {
         return $api.put(`/movie/${dataToUpdateMovie.id}`, {
             title: dataToUpdateMovie.title,
+            genre: dataToUpdateMovie.genre,
             year: dataToUpdateMovie.year,
             poster: dataToUpdateMovie.poster,
         });

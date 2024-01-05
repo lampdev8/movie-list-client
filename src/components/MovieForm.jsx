@@ -1,37 +1,55 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../index';
+import React, { useState, useEffect } from 'react';
 import {observer} from "mobx-react-lite";
 import cl from './MovieForm.module.css';
 import FormInput from './UI/input/FormInput';
+import Select from './UI/select/Select';
 import SuccessButton from './UI/button/SuccessButton';
+import GenreService from '../services/GenreService';
 
 const MovieForm = (props) => {
-    const {store} = useContext(Context);
     const [movie, setMovie] = useState({
         id: null,
         poster: null,
         title: null,
+        genre: null,
         year: null,
     });
+    const [genres, setGenres] = useState([]);
+
+    async function fetchGenres() {
+        try {
+          const response = await GenreService.fetchGenres();
+          setGenres(GenreService.getGenresForSelect(response.data.data));
+        } catch (e) {
+          console.error(e.message);
+        }
+      }
 
     const addNewMovie = (e) => {
         e.preventDefault();
 
-        props.create(movie);
+        let newMovie = movie;
+
+        if (!movie.genre) {
+            newMovie.genre = genres.length > 0 ? genres[0].value : '';
+        }
+
+        props.create(newMovie);
 
         setMovie({
             id: null,
             poster: null,
             title: null,
+            genre: null,
             year: null,
         });
-      }
+    }
 
       const updateMovie = (e) => {
         e.preventDefault();
 
         props.update(movie);
-      }
+    }
 
     const toBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -55,8 +73,14 @@ const MovieForm = (props) => {
     }
 
     useEffect(() => {
+        fetchGenres();
+    }, []);
+
+    useEffect(() => {
         if (props.movie !== undefined) {
-            setMovie(props.movie);
+            let movieData = props.movie;
+            movieData.genre = props.movie.genre_id;
+            setMovie(movieData);
         }
     }, [props.movie])
 
@@ -82,12 +106,17 @@ const MovieForm = (props) => {
                     placeholder="Title"
                     style={{marginBottom: '1.5rem',}}
                 />
+                <Select
+                    options={genres}
+                    value={movie.genre}
+                    onChange={ (genre) => {setMovie({...movie, genre: genre})} }
+                />
                 <FormInput
                     onChange={(e) => setMovie({...movie, year: e.target.value})}
                     value={movie.year}
                     type="number"
                     placeholder="Publishing year"
-                    style={{marginBottom: '1.5rem',}}
+                    style={{marginTop: '1.5rem', marginBottom: '1.5rem',}}
                 />
 
                 <div style={{textAlign: 'end',}}>

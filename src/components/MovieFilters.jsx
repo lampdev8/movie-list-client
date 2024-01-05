@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from './UI/select/Select';
 import FormInput from './UI/input/FormInput';
 import IconButton from './UI/button/IconButton';
@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import SuccessButton from './UI/button/SuccessButton';
 import SecondaryButton from './UI/button/SecondaryButton';
+import GenreService from '../services/GenreService';
 
 const MovieFilters = ({
     filters,
@@ -13,6 +14,8 @@ const MovieFilters = ({
     setCurrentPage,
     fetchMovies,
 }) => {
+  const [genres, setGenres] = useState([]);
+
   const clearFilters = () => {
     setFilters({
       search: '',
@@ -20,6 +23,19 @@ const MovieFilters = ({
       year: '',
     });
   }
+
+  async function fetchGenres() {
+    try {
+      const response = await GenreService.fetchGenres();
+      setGenres(GenreService.getGenresForSelect(response.data.data));
+    } catch (e) {
+      console.error(e.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchGenres();
+  }, []);
 
   return (
     <div className='d-flex'>
@@ -44,17 +60,7 @@ const MovieFilters = ({
       <div>
         <Select
           defaultValue="All Genres"
-          options={[
-            {value: 'action', name: 'Action'},
-            {value: 'comedy', name: 'Comedy'},
-            {value: 'drama', name: 'Drama'},
-            {value: 'fantasy', name: 'Fantasy'},
-            {value: 'horror', name: 'Horror'},
-            {value: 'mystery', name: 'Mystery'},
-            {value: 'romance', name: 'Romance'},
-            {value: 'thriller', name: 'Thriller'},
-            {value: 'western', name: 'Western'},
-          ]}
+          options={genres}
           value={filters.genre}
           onChange={ (genre) => {setFilters({...filters, genre: genre})} }
         />
