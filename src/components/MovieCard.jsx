@@ -27,7 +27,8 @@ const MovieCard = (props) => {
                     alt="poster"
                 />
             </div>
-            <h5 className={cl.text}>{props.movie.title}</h5>
+            <h5 className={cl.text} style={{marginBottom: 'unset',}}>{props.movie.title}</h5>
+            <div className={cl.text}>{props.movie.genre_name}</div>
             <div className="d-flex">
                 <div className={cl.text}>{props.movie.year}</div>
                 <div className={cl.text + ' d-flex right-align'} >

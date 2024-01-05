@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 import { Context } from '../index';
 import {observer} from "mobx-react-lite";
 import {useNavigate} from 'react-router-dom';
@@ -7,26 +7,35 @@ import MovieService from '../services/MovieService';
 import SuccessButton from '../components/UI/button/SuccessButton';
 import Pagination from '../components/UI/pagination/Pagination';
 import ConfirmationModal from '../components/UI/modal/ConfirmationModal';
+import MovieFilters from '../components/MovieFilters';
 import MovieList from '../components/MovieList';
 
 const Movies = () => {
     const {store} = useContext(Context);
     const navigate = useNavigate();
+    const [filters, setFilters] = useState({
+      search: '',
+      genre: '',
+      year: '',
+    });
     const [movies, setMovies] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [visibleConfirmationModal, setVisibleConfirmationModal] = useState(false);
+    const timestamp = useRef(0);
 
-    async function fetchMovies(page) {
+    async function fetchMovies(filters, page) {
       try {
-          const response = await MovieService.fetchMovies({
-              page: page,
-          });
+        let requestParams = filters;
+        requestParams.page = page;
 
-          setMovies(response.data.data.data);
-          setCurrentPage(response.data.data.current_page);
-          setLastPage(response.data.data.last_page);
+        const response = await MovieService.fetchMovies(requestParams);
+
+        setMovies(response.data.data.data);
+        setCurrentPage(response.data.data.current_page);
+        setLastPage(response.data.data.last_page);
+        timestamp.current = new Date().getTime();
       } catch (e) {
           console.error(e.message);
       }
@@ -38,7 +47,7 @@ const Movies = () => {
 
     const selectPage = async (page) => {
       setCurrentPage(page);
-      await fetchMovies(page);
+      await fetchMovies(filters, page);
     }
 
     const removeConfirmation = (movie) => {
@@ -49,7 +58,7 @@ const Movies = () => {
     const deleteMovie = async () => {
       await MovieService.remove(selectedMovie.id)
       setVisibleConfirmationModal(false);
-      fetchMovies(1);
+      fetchMovies(filters, 1);
       setCurrentPage(1);
       setSelectedMovie(null);
     }
@@ -57,7 +66,7 @@ const Movies = () => {
     useEffect(() => {
         if (localStorage.getItem('access_token')) {
           store.fetchUser();
-          fetchMovies(currentPage);
+          fetchMovies(filters, currentPage);
         }
       }, []);
 
@@ -65,26 +74,28 @@ const Movies = () => {
         <div>
           <TopNavbar showGoBack={false} />
 
+          <h2 style={{color: 'white',}}>Movies</h2>
+          <SuccessButton
+            onClick={addMovie}
+          >
+            Add Movie
+          </SuccessButton>
+
+          <div className='separate_element'>
+            <MovieFilters
+              filters={filters}
+              setFilters={setFilters}
+              setCurrentPage={setCurrentPage}
+              fetchMovies={fetchMovies}
+            />
+          </div>
+
           {movies !== undefined && movies.length === 0 ?
             <div style={{margin: 'auto', marginTop: '7rem', textAlign: 'center',}}>
               <h2 style={{color: 'white',}}>
-                Your movie list is empty
+                There are no movies available
               </h2>
-              <div>
-                <SuccessButton
-                  onClick={addMovie}
-                >
-                  Add a new Movie
-                </SuccessButton>
-              </div>
             </div> : <div>
-              <h2 style={{color: 'white',}}>My Movies</h2>
-              <SuccessButton
-                onClick={addMovie}
-              >
-                Add Movie
-              </SuccessButton>
-
               <MovieList
                 movies={movies}
                 remove={removeConfirmation}
@@ -94,6 +105,7 @@ const Movies = () => {
                 currentPage={currentPage}
                 lastPage={lastPage}
                 selectPage={selectPage}
+                key={`pagination_${timestamp.current}`}
               />
             </div>
           }

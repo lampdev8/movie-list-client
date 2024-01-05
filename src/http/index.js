@@ -2,6 +2,7 @@ import axios from 'axios';
 import AuthService from '../services/AuthService';
 
 export const API_URL = 'http://localhost:8000/api/v1';
+// export const API_URL = 'https://fd3f-176-241-139-28.ngrok-free.app/api/v1';
 
 const $api = axios.create({
     withCredentials: true,
