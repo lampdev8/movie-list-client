@@ -22,7 +22,6 @@ export default class Store {
             const response = await AuthService.login(email, password);
             localStorage.setItem('access_token', response.data.data.access_token);
             this.setAuth(true);
-            this.fetchUser();
         } catch(error) {
             console.error(error.message);
             errorCallback(error.message);

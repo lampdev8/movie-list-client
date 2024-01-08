@@ -64,8 +64,7 @@ const Movies = () => {
     }
 
     useEffect(() => {
-        if (localStorage.getItem('access_token')) {
-          store.fetchUser();
+        if (store.isAuth) {
           fetchMovies(filters, currentPage);
         }
       }, []);

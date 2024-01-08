@@ -22,6 +22,7 @@ const LoginForm = () => {
         }
 
         store.login(email, password, setErrorMessage);
+        store.fetchUser();
     }
 
     return (
